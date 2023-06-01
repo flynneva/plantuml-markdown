@@ -426,7 +426,8 @@ class PlantUMLPreprocessor(markdown.preprocessors.Preprocessor):
 
     def _render_local_uml_image(self, plantuml_code: str, img_format: str) -> Tuple[Optional[bytes], Optional[str]]:
         plantuml_code = plantuml_code.encode('utf8')
-        cmdline = self.config['plantuml_cmd'].split(' ')
+        cmdline = re.split(r'(?<!\\) ', self.config['plantuml_cmd'])
+        logger.debug(f"Split command is: {', '.join(cmdline)}")
         cmdline.extend(['-pipemap' if img_format == 'map' else '-p', "-t" + img_format, '-charset', 'UTF-8'])
 
         if self._config_path:
@@ -435,6 +436,7 @@ class PlantUMLPreprocessor(markdown.preprocessors.Preprocessor):
 
         try:
             # On Windows run batch files through a shell so the extension can be resolved
+            logger.debug(cmdline)
             p = Popen(cmdline, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=(os.name == 'nt'))
             out, err = p.communicate(input=plantuml_code)
         except Exception as exc:
