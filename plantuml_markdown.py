@@ -436,7 +436,8 @@ class PlantUMLPreprocessor(markdown.preprocessors.Preprocessor):
 
         try:
             # On Windows run batch files through a shell so the extension can be resolved
-            logger.debug(cmdline)
+            logger.info(cmdline)
+            logger.info(os.getcwd())
             p = Popen(cmdline, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=(os.name == 'nt'))
             out, err = p.communicate(input=plantuml_code)
         except Exception as exc:
